@@ -15,6 +15,7 @@
             margin: 0;
             min-height: 100vh;
             font-family: "Microsoft YaHei", sans-serif;
+            transition: background 0.8s ease-in-out;
         }
 
         .text {
@@ -188,8 +189,52 @@
 
     <!-- ============================================================ -->
     <script>
-        var characterName = ["Sandrone", "Columbina", "Flins", "Ineffa", "Furina"];
 
+        /* 定义角色数据字典 */
+        var characterData = {
+            Sandrone:{
+                name:"Sandrone",
+                images:[
+                    "https://fastcdn.mihoyo.com/content-v2/hk4e/157823/16e911d7e83ec4a44860aaecf26960de_3410040563868765692.jpg",
+                    "https://fastcdn.mihoyo.com/content-v2/hk4e/157823/5dce7c327bba633fdc6f50d7e79e480c_7387904052823575900.jpg"
+                ]
+            },
+            Columbina:{
+                name:"Columbina",
+                images: [
+                    "https://fastcdn.mihoyo.com/content-v2/hk4e/157823/aa0dcba0bcbd2e7da35dcb5e3aba2b3c_7762775546423283938.jpg",
+                    "https://fastcdn.mihoyo.com/content-v2/hk4e/157823/6ce8648293cf4ea33342e015936f2421_4824195509302088752.jpg"
+                ]
+            },
+            Flins:{
+                name:"Flins",
+                images:[
+                    "https://fastcdn.mihoyo.com/content-v2/hk4e/157823/aa0dcba0bcbd2e7da35dcb5e3aba2b3c_7762775546423283938.jpg",
+                    "https://fastcdn.mihoyo.com/content-v2/hk4e/157823/6ce8648293cf4ea33342e015936f2421_4824195509302088752.jpg"
+                ]
+            },
+            Ineffa:{
+                name:"Ineffa",
+                images:[
+                    "https://fastcdn.mihoyo.com/content-v2/hk4e/157823/aa0dcba0bcbd2e7da35dcb5e3aba2b3c_7762775546423283938.jpg",
+                    "https://fastcdn.mihoyo.com/content-v2/hk4e/157823/6ce8648293cf4ea33342e015936f2421_4824195509302088752.jpg"
+                ]
+            },
+            Furina:{
+                name:"Furina",
+                images:[
+                    "https://act-webstatic.mihoyo.com/upload/contentweb/hk4e/34ec75c9ed70f793cdd698ad1a4764e5_731983624099835302.jpg",
+                    "https://act-webstatic.mihoyo.com/upload/contentweb/hk4e/3ce8f43e9de08e1988aafc00fdff2410_8142185104639306099.jpg"
+                ]
+            }
+        }
+
+        var characterName = Object.keys(characterData);
+
+
+        startTimer();
+
+        // 切换内容函数
         function switchContent() {
             var selectedValue = document.getElementById("character-select").value;
 
@@ -218,8 +263,42 @@
                     break;
             }
 
+            currentCharacter = selectedValue;
+            // 重置图片索引
+            currentImageIndex = 0;
+            // 获取当前角色的图片列表
+            var images = characterData[selectedValue].images;
+            // 将背景图设置为字典里的第一张
+            document.body.style.backgroundImage = "url(" + image[0] + ")";
+            // 调用定时器
+            startTimer();
+
+
             // 3. 记住当前选择
             localStorage.setItem('selectedCharacter', selectedValue);
+        }
+
+        // 轮播的实现
+        // 当前角色
+        var currentCharacter = null;
+        // 当前图片索引
+        var currentImageIndex = 0;
+        var timer = null;
+
+        // 定时器函数,用于切换索引
+        function startTimer() {
+            // 清楚旧定时器
+            if(timer != null) {
+                clearInterval(timer);
+            }
+
+            // 启动新的定时器
+            timer = setInterval(function (){
+                // 切换索引(0->1->0->1...)
+                currentImageIndex = (currentImageIndex + 1) % 2;
+                var images = characterData[currentCharacter].images;
+                document.body.style.backgroundImage = "url(" + images[currentImageIndex] + ")";
+            }, 5000);
         }
 
         function restoreState() {
@@ -229,6 +308,7 @@
             }
             switchContent();
         }
+
 
         // 页面加载和缓存恢复时执行
         window.addEventListener('load', restoreState);
