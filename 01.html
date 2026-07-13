@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genshin Impact</title>
+
+    <style>
+        /* ===== 页面基础样式 ===== */
+        body {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        .text {
+            text-align: center;
+        }
+
+        /* ===== 下拉菜单容器 ===== */
+        .select-container {
+            text-align: center;
+            margin: 10px 0 20px;
+        }
+
+        #character-select {
+            padding: 8px 16px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(128, 128, 128, 0.5);
+            background: rgba(255, 255, 255, 0.9);
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* ===== 图文卡片 ===== */
+        .content-panel {
+            max-width: 30%;
+            margin: 20px auto;
+            padding: 20px 25px;
+            border: 1px solid rgba(128, 128, 128, 0.4);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .content-panel h2 {
+            text-align: center;
+            margin-top: 0;
+        }
+
+        .content-panel img {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+            border-radius: 12px;
+        }
+
+        /* ===== 角色介绍行（左右布局） ===== */
+        .character-intro {
+            display: flex;          /* 关键：让 ::before 和内容水平排列 */
+            align-items: flex-start;
+            width: 100%;
+            margin-top: 16px;
+            padding: 12px 16px;
+            background-color: rgba(0, 0, 0, 0.55);
+            border-radius: 12px;
+            box-sizing: border-box;
+        }
+
+        /* 左侧图标（伪元素） */
+        .character-intro::before {
+            flex-shrink: 0;
+            display: block;
+            content: "";
+            width: 20px;
+            height: 20px;
+            background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyFpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTQyIDc5LjE2MDkyNCwgMjAxNy8wNy8xMy0wMTowNjozOSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChXaW5kb3dzKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDowQjNDRDg0RkFBMDIxMUU5ODY4QTk4NjNGNEM4NDk3QyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmlkZDowQjNDRDg1MEFBMDIxMUU5ODY4QTk4NjNGNEM4NDk3QyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjBCM0NEODREQUEwMjExRTk4NjhBOTg2M0Y0Qzg0OTdDIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjBCM0NEODRFQUEwMjExRTk4NjhBOTg2M0Y0Qzg0OTdDIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+/5UTFAAAAK5JREFUeNqk1OEKgzAMBGA7fOq2dr/cY68zoC6UJHdqoIgaP5Bek3rvE1F1W9K4wk4Bwar9XwX1s5hcG4NG2KKw4xlEr2Dju8KCEQZRFmv7O4gy2FvtMkTRL2iMQq9iRzUPfe0nQCqNmQ/Ow3e4T+c3RoAnI3e6vJ48bgqDhpgVGw9dGMwLdiWCbWLR0YtQF0PDoQbDId8dX8UYX/nJPNQoxGTNxPhfVdA/qPknwACMfVz3Rdft9wAAAABJRU5ErkJggg==) center no-repeat;
+            background-size: 20px;
+            margin-right: 16px;
+            margin-top: 2px;
+        }
+
+        /* 右侧文字 */
+        .character-intro-content {
+            text-align: left;
+            color: #ffffff;
+            line-height: 1.8;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 768px) {
+            .content-panel {
+                max-width: 80%;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1 class="text">Genshin Impact</h1>
+    <h2 class="text">Welcome to Genshin Impact!</h2>
+
+    <div class="select-container">
+        <label>Select a character:</label><br>
+        <select id="character-select" onchange="switchContent()">
+            <option value="" selected>-- Please select a character --</option>
+            <option value="Sandrone">Sandrone</option>
+            <option value="Columbina">Columbina</option>
+            <option value="Flins">Flins</option>
+            <option value="Ineffa">Ineffa</option>
+            <option value="Furina">Furina</option>
+        </select>
+    </div>
+
+    <!-- ===== 卡片1：Sandrone ===== -->
+    <div id="Sandrone" class="content-panel">
+        <h2>Sandrone</h2>
+        <a href="https://patchwiki.biligame.com/images/ys/f/f8/4i7yshux26dfzqk8o8j7xu7s2r1rgye.png" >
+            <img src="https://fastcdn.hoyoverse.com/content-v2/hk4e/164628/765eb21a90ca3d608d437e03810bbd8a_1755193234439956682.png" alt="Sandrone">
+        </a>
+        <div class="character-intro">
+            <p class="character-intro-content">
+                愚人众执行官第七席，「木偶」。以数理解析事象之人，茶会上永不缺席的优雅淑女。
+            </p>
+        </div>
+    </div>
+
+    <!-- ===== 卡片2：Columbina ===== -->
+    <div id="Columbina" class="content-panel">
+        <h2>Columbina</h2>
+        <a href="https://patchwiki.biligame.com/images/ys/9/98/j6qtlo52m1bt4a3ys7cl422h3gckw3l.png" >
+            <img src="https://fastcdn.hoyoverse.com/content-v2/hk4e/162067/4e8138f314c65807b63808848bcfe6f7_3858029483757003197.png" alt="Columbina">
+        </a>
+        <div class="character-intro">
+            <p class="character-intro-content">
+                挪德卡莱的月神「库塔尔」、前愚人众执行官第三席「少女」。但朋友们都这么称呼她——哥伦比娅·希珀塞莱尼娅。她更喜欢这个名字。
+            </p>
+        </div>
+    </div>
+
+    <!-- ===== 卡片3：Flins ===== -->
+    <div id="Flins" class="content-panel">
+        <h2>Flins</h2>
+        <a href="https://patchwiki.biligame.com/images/ys/1/10/faae4rzd4bupiiqtom3vceyz55t9f6g.png">
+            <img src="https://fastcdn.hoyoverse.com/content-v2/hk4e/159269/78026b4939a74349cfec212c99c38b7a_8182066422859237792.png" alt="Flins">
+        </a>
+        <div class="character-intro">
+            <p class="character-intro-content">
+                克里洛·楚德米洛维奇·菲林斯，挪德卡莱「执灯士」的一员——他喜欢这样介绍自己。
+            </p>
+        </div>
+    </div>
+
+    <!-- ===== 卡片4：Ineffa ===== -->
+    <div id="Ineffa" class="content-panel">
+        <h2>Ineffa</h2>
+        <a href="https://patchwiki.biligame.com/images/ys/0/06/fc5z8bw9xjptxvr1xqhi3fg87d3t4aa.png">
+            <img src="https://fastcdn.hoyoverse.com/content-v2/hk4e/157730/bcbd2761b4a6d3cef8030190c8f223f1_2382801960058571524.png" alt="Ineffa">
+        </a>
+        <div class="character-intro">
+            <p class="character-intro-content">
+                来自挪德卡莱的机器人，机体集成了来自世界各地的机关部件，由「叮铃哐啷蛋卷工坊」设计制造。            </p>
+        </div>
+    </div>
+
+    <!-- ===== 卡片5：Furina ===== -->
+    <div id="Furina" class="content-panel">
+        <h2>Furina</h2>
+        <a href="https://patchwiki.biligame.com/images/ys/6/68/gf8q0j490ygvze7w9npx35e49hw6iu0.png">
+            <img src="https://fastcdn.hoyoverse.com/content-v2/hk4e/113447/6b3e34fb09616b569998330b968cd2a0_6887303933528198014.png" alt="Furina">
+        </a>
+        <div class="character-intro">
+            <p class="character-intro-content">
+                「众水、众方、众民与众律法的女王」，深受民众喜爱。<br>
+                热衷于欧庇克莱歌剧院上演的每一场审判，也总是在意着「观众」的眼光。
+            </p>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <script>
+        var characterName = ["Sandrone", "Columbina", "Flins", "Ineffa", "Furina"];
+
+        function switchContent() {
+            var selectedValue = document.getElementById("character-select").value;
+
+            // 1. 切换卡片显示
+            for (var i = 0; i < characterName.length; i++) {
+                document.getElementById(characterName[i]).style.display =
+                    selectedValue === characterName[i] ? "block" : "none";
+            }
+
+            // 2. 切换背景图
+            switch (selectedValue) {
+                case "Sandrone":
+                    document.body.style.backgroundImage = "url(https://fastcdn.mihoyo.com/content-v2/hk4e/157823/5dce7c327bba633fdc6f50d7e79e480c_7387904052823575900.jpg)";
+                    break;
+                case "Columbina":
+                    document.body.style.backgroundImage = "url(https://fastcdn.mihoyo.com/content-v2/hk4e/157823/6ce8648293cf4ea33342e015936f2421_4824195509302088752.jpg)";
+                    break;
+                case "Flins":
+                    document.body.style.backgroundImage = "url(https://fastcdn.mihoyo.com/content-v2/hk4e/157823/aa0dcba0bcbd2e7da35dcb5e3aba2b3c_7762775546423283938.jpg)";
+                    break;
+                case "Ineffa":
+                    document.body.style.backgroundImage = "url(https://fastcdn.mihoyo.com/content-v2/hk4e/157823/aa0dcba0bcbd2e7da35dcb5e3aba2b3c_7762775546423283938.jpg)";
+                    break;
+                case "Furina":
+                    document.body.style.backgroundImage = "url(https://act-webstatic.mihoyo.com/upload/contentweb/hk4e/34ec75c9ed70f793cdd698ad1a4764e5_731983624099835302.jpg)";
+                    break;
+            }
+
+            // 3. 记住当前选择
+            localStorage.setItem('selectedCharacter', selectedValue);
+        }
+
+        function restoreState() {
+            var saved = localStorage.getItem('selectedCharacter');
+            if (saved && characterName.indexOf(saved) !== -1) {
+                document.getElementById("character-select").value = saved;
+            }
+            switchContent();
+        }
+
+        // 页面加载和缓存恢复时执行
+        window.addEventListener('load', restoreState);
+        window.addEventListener('pageshow', restoreState);
+    </script>
+
+</body>
+</html>
