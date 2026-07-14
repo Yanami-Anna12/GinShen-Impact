@@ -1,319 +1,390 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Genshin Impact</title>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Genshin Impact</title>
+
+    </head>
 
     <style>
-        /* ===== 页面基础样式 ===== */
-        body {
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            margin: 0;
-            min-height: 100vh;
-            font-family: "Microsoft YaHei", sans-serif;
-            transition: background 0.8s ease-in-out;
-        }
+            /* ===== 页面基础样式 ===== */
+            body {
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+                margin: 0;
+                min-height: 100vh;
+                font-family: "Microsoft YaHei", sans-serif;
+                transition: background 0.8s ease-in-out;
+            }
 
-        .text {
-            text-align: center;
-        }
+            .text {
+                text-align: center;
+            }
 
-        /* ===== 下拉菜单容器 ===== */
-        .select-container {
-            text-align: center;
-            margin: 10px 0 20px;
-        }
+            /* ===== 下拉菜单容器 ===== */
+            .select-container {
+                text-align: center;
+                margin: 10px 0 20px;
+            }
 
-        #character-select {
-            padding: 8px 16px;
-            font-size: 16px;
-            border-radius: 8px;
-            border: 1px solid rgba(128, 128, 128, 0.5);
-            background: rgba(255, 255, 255, 0.9);
-            cursor: pointer;
-            outline: none;
-        }
+            #character-select {
+                padding: 8px 16px;
+                font-size: 16px;
+                border-radius: 8px;
+                border: 1px solid rgba(128, 128, 128, 0.5);
+                background: rgba(255, 255, 255, 0.9);
+                cursor: pointer;
+                outline: none;
+            }
 
-        /* ===== 图文卡片 ===== */
-        .content-panel {
-            max-width: 30%;
-            margin: 20px auto;
-            padding: 20px 25px;
-            border: 1px solid rgba(128, 128, 128, 0.4);
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            display: none;
-        }
-
-        .content-panel h2 {
-            text-align: center;
-            margin-top: 0;
-        }
-
-        .content-panel img {
-            display: block;
-            margin: 0 auto;
-            max-width: 100%;
-            border-radius: 12px;
-        }
-
-        /* ===== 角色介绍行（左右布局） ===== */
-        .character-intro {
-            display: flex;          /* 关键：让 ::before 和内容水平排列 */
-            align-items: flex-start;
-            width: 100%;
-            margin-top: 16px;
-            padding: 12px 16px;
-            background-color: rgba(0, 0, 0, 0.55);
-            border-radius: 12px;
-            box-sizing: border-box;
-        }
-
-        /* 左侧图标（伪元素） */
-        .character-intro::before {
-            flex-shrink: 0;
-            display: block;
-            content: "";
-            width: 20px;
-            height: 20px;
-            background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyFpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTQyIDc5LjE2MDkyNCwgMjAxNy8wNy8xMy0wMTowNjozOSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChXaW5kb3dzKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDowQjNDRDg0RkFBMDIxMUU5ODY4QTk4NjNGNEM4NDk3QyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmlkZDowQjNDRDg1MEFBMDIxMUU5ODY4QTk4NjNGNEM4NDk3QyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjBCM0NEODREQUEwMjExRTk4NjhBOTg2M0Y0Qzg0OTdDIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjBCM0NEODRFQUEwMjExRTk4NjhBOTg2M0Y0Qzg0OTdDIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+/5UTFAAAAK5JREFUeNqk1OEKgzAMBGA7fOq2dr/cY68zoC6UJHdqoIgaP5Bek3rvE1F1W9K4wk4Bwar9XwX1s5hcG4NG2KKw4xlEr2Dju8KCEQZRFmv7O4gy2FvtMkTRL2iMQq9iRzUPfe0nQCqNmQ/Ow3e4T+c3RoAnI3e6vJ48bgqDhpgVGw9dGMwLdiWCbWLR0YtQF0PDoQbDId8dX8UYX/nJPNQoxGTNxPhfVdA/qPknwACMfVz3Rdft9wAAAABJRU5ErkJggg==) center no-repeat;
-            background-size: 20px;
-            margin-right: 16px;
-            margin-top: 2px;
-        }
-
-        /* 右侧文字 */
-        .character-intro-content {
-            text-align: left;
-            color: #ffffff;
-            line-height: 1.8;
-            font-size: 14px;
-            margin: 0;
-        }
-
-        /* ===== 响应式 ===== */
-        @media (max-width: 768px) {
+            /* ===== 图文卡片 ===== */
             .content-panel {
-                max-width: 80%;
-                padding: 15px;
+                max-width: 30%;
+                margin: 20px auto;
+                padding: 20px 25px;
+                border: 1px solid rgba(128, 128, 128, 0.4);
+                border-radius: 16px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                display: none;
             }
-        }
+
+            .content-panel h2 {
+                text-align: center;
+                margin-top: 0;
+            }
+
+            .content-panel img {
+                display: block;
+                margin: 0 auto;
+                max-width: 100%;
+                border-radius: 12px;
+            }
+
+            /* ===== 角色介绍行（左右布局） ===== */
+            .character-intro {
+                display: flex;          /* 关键：让 ::before 和内容水平排列 */
+                align-items: flex-start;
+                width: 100%;
+                margin-top: 16px;
+                padding: 12px 16px;
+                background-color: rgba(0, 0, 0, 0.55);
+                border-radius: 12px;
+                box-sizing: border-box;
+            }
+
+            /* 左侧图标（伪元素） */
+            .character-intro::before {
+                flex-shrink: 0;
+                display: block;
+                content: "";
+                width: 20px;
+                height: 20px;
+                background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyFpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTQyIDc5LjE2MDkyNCwgMjAxNy8wNy8xMy0wMTowNjozOSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChXaW5kb3dzKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDowQjNDRDg0RkFBMDIxMUU5ODY4QTk4NjNGNEM4NDk3QyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmlkZDowQjNDRDg1MEFBMDIxMUU5ODY4QTk4NjNGNEM4NDk3QyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjBCM0NEODREQUEwMjExRTk4NjhBOTg2M0Y0Qzg0OTdDIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjBCM0NEODRFQUEwMjExRTk4NjhBOTg2M0Y0Qzg0OTdDIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+/5UTFAAAAK5JREFUeNqk1OEKgzAMBGA7fOq2dr/cY68zoC6UJHdqoIgaP5Bek3rvE1F1W9K4wk4Bwar9XwX1s5hcG4NG2KKw4xlEr2Dju8KCEQZRFmv7O4gy2FvtMkTRL2iMQq9iRzUPfe0nQCqNmQ/Ow3e4T+c3RoAnI3e6vJ48bgqDhpgVGw9dGMwLdiWCbWLR0YtQF0PDoQbDId8dX8UYX/nJPNQoxGTNxPhfVdA/qPknwACMfVz3Rdft9wAAAABJRU5ErkJggg==) center no-repeat;
+                background-size: 20px;
+                margin-right: 16px;
+                margin-top: 2px;
+            }
+
+            /* 右侧文字 */
+            .character-intro-content {
+                text-align: left;
+                color: #ffffff;
+                line-height: 1.8;
+                font-size: 14px;
+                margin: 0;
+            }
+
     </style>
-</head>
 
-<body>
 
-    <h1 class="text">Genshin Impact</h1>
-    <h2 class="text">Welcome to Genshin Impact!</h2>
-
-    <div class="select-container">
-        <label>Select a character:</label><br>
-        <select id="character-select" onchange="switchContent()">
-            <option value="" selected>-- Please select a character --</option>
-            <option value="Sandrone">Sandrone</option>
-            <option value="Columbina">Columbina</option>
-            <option value="Flins">Flins</option>
-            <option value="Ineffa">Ineffa</option>
-            <option value="Furina">Furina</option>
-        </select>
-    </div>
-
-    <!-- ===== 卡片1：Sandrone ===== -->
-    <div id="Sandrone" class="content-panel">
-        <h2>Sandrone</h2>
-        <a href="https://patchwiki.biligame.com/images/ys/f/f8/4i7yshux26dfzqk8o8j7xu7s2r1rgye.png" >
-            <img src="https://fastcdn.hoyoverse.com/content-v2/hk4e/164628/765eb21a90ca3d608d437e03810bbd8a_1755193234439956682.png" alt="Sandrone">
-        </a>
-        <div class="character-intro">
-            <p class="character-intro-content">
-                愚人众执行官第七席，「木偶」。以数理解析事象之人，茶会上永不缺席的优雅淑女。
-            </p>
+    <body>
+        <!--背景音乐-->
+        <div>
+            <button onclick="playMusic()">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTM4IDc5LjE1OTgyNCwgMjAxNi8wOS8xNC0wMTowOTowMSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTcgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QzU2MUMyMjQ1RDI3MTFFOTlGNjlGQ0Y5MEYwNzU5RDQiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QzU2MUMyMjU1RDI3MTFFOTlGNjlGQ0Y5MEYwNzU5RDQiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpDMUVBQTk3RjVEMjcxMUU5OUY2OUZDRjkwRjA3NTlENCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpDMUVBQTk4MDVEMjcxMUU5OUY2OUZDRjkwRjA3NTlENCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PuGvQ5sAAAgdSURBVHja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">
+            </button>
         </div>
-    </div>
+        <h1 class="text">Genshin Impact</h1>
+        <h2 class="text">Welcome to Genshin Impact!</h2>
 
-    <!-- ===== 卡片2：Columbina ===== -->
-    <div id="Columbina" class="content-panel">
-        <h2>Columbina</h2>
-        <a href="https://patchwiki.biligame.com/images/ys/9/98/j6qtlo52m1bt4a3ys7cl422h3gckw3l.png" >
-            <img src="https://fastcdn.hoyoverse.com/content-v2/hk4e/162067/4e8138f314c65807b63808848bcfe6f7_3858029483757003197.png" alt="Columbina">
-        </a>
-        <div class="character-intro">
-            <p class="character-intro-content">
-                挪德卡莱的月神「库塔尔」、前愚人众执行官第三席「少女」。但朋友们都这么称呼她——哥伦比娅·希珀塞莱尼娅。她更喜欢这个名字。
-            </p>
+        <div class="select-container">
+            <label>Select a character:</label><br>
+            <select id="character-select" onchange="switchContent()">
+                <option value="" selected>-- Please select a character --</option>
+                <option value="Sandrone">Sandrone</option>
+                <option value="Columbina">Columbina</option>
+                <option value="Flins">Flins</option>
+                <option value="Ineffa">Ineffa</option>
+                <option value="Furina">Furina</option>
+            </select>
         </div>
-    </div>
 
-    <!-- ===== 卡片3：Flins ===== -->
-    <div id="Flins" class="content-panel">
-        <h2>Flins</h2>
-        <a href="https://patchwiki.biligame.com/images/ys/1/10/faae4rzd4bupiiqtom3vceyz55t9f6g.png">
-            <img src="https://fastcdn.hoyoverse.com/content-v2/hk4e/159269/78026b4939a74349cfec212c99c38b7a_8182066422859237792.png" alt="Flins">
-        </a>
-        <div class="character-intro">
-            <p class="character-intro-content">
-                克里洛·楚德米洛维奇·菲林斯，挪德卡莱「执灯士」的一员——他喜欢这样介绍自己。
-            </p>
+        <!-- ===== 卡片1：Sandrone ===== -->
+        <div id="Sandrone" class="content-panel">
+            <h2>Sandrone</h2>
+            <a href="https://patchwiki.biligame.com/images/ys/f/f8/4i7yshux26dfzqk8o8j7xu7s2r1rgye.png" >
+                <img src="https://fastcdn.hoyoverse.com/content-v2/hk4e/164628/765eb21a90ca3d608d437e03810bbd8a_1755193234439956682.png" alt="Sandrone">
+            </a>
+            <div class="character-intro">
+                <p class="character-intro-content">
+                    愚人众执行官第七席，「木偶」。以数理解析事象之人，茶会上永不缺席的优雅淑女。
+                </p>
+            </div>
         </div>
-    </div>
 
-    <!-- ===== 卡片4：Ineffa ===== -->
-    <div id="Ineffa" class="content-panel">
-        <h2>Ineffa</h2>
-        <a href="https://patchwiki.biligame.com/images/ys/0/06/fc5z8bw9xjptxvr1xqhi3fg87d3t4aa.png">
-            <img src="https://fastcdn.hoyoverse.com/content-v2/hk4e/157730/bcbd2761b4a6d3cef8030190c8f223f1_2382801960058571524.png" alt="Ineffa">
-        </a>
-        <div class="character-intro">
-            <p class="character-intro-content">
-                来自挪德卡莱的机器人，机体集成了来自世界各地的机关部件，由「叮铃哐啷蛋卷工坊」设计制造。            </p>
+        <!-- ===== 卡片2：Columbina ===== -->
+        <div id="Columbina" class="content-panel">
+            <h2>Columbina</h2>
+            <a href="https://patchwiki.biligame.com/images/ys/9/98/j6qtlo52m1bt4a3ys7cl422h3gckw3l.png" >
+                <img src="https://fastcdn.hoyoverse.com/content-v2/hk4e/162067/4e8138f314c65807b63808848bcfe6f7_3858029483757003197.png" alt="Columbina">
+            </a>
+            <div class="character-intro">
+                <p class="character-intro-content">
+                    挪德卡莱的月神「库塔尔」、前愚人众执行官第三席「少女」。但朋友们都这么称呼她——哥伦比娅·希珀塞莱尼娅。她更喜欢这个名字。
+                </p>
+            </div>
         </div>
-    </div>
 
-    <!-- ===== 卡片5：Furina ===== -->
-    <div id="Furina" class="content-panel">
-        <h2>Furina</h2>
-        <a href="https://patchwiki.biligame.com/images/ys/6/68/gf8q0j490ygvze7w9npx35e49hw6iu0.png">
-            <img src="https://fastcdn.hoyoverse.com/content-v2/hk4e/113447/6b3e34fb09616b569998330b968cd2a0_6887303933528198014.png" alt="Furina">
-        </a>
-        <div class="character-intro">
-            <p class="character-intro-content">
-                「众水、众方、众民与众律法的女王」，深受民众喜爱。<br>
-                热衷于欧庇克莱歌剧院上演的每一场审判，也总是在意着「观众」的眼光。
-            </p>
+        <!-- ===== 卡片3：Flins ===== -->
+        <div id="Flins" class="content-panel">
+            <h2>Flins</h2>
+            <a href="https://patchwiki.biligame.com/images/ys/1/10/faae4rzd4bupiiqtom3vceyz55t9f6g.png">
+                <img src="https://fastcdn.hoyoverse.com/content-v2/hk4e/159269/78026b4939a74349cfec212c99c38b7a_8182066422859237792.png" alt="Flins">
+            </a>
+            <div class="character-intro">
+                <p class="character-intro-content">
+                    克里洛·楚德米洛维奇·菲林斯，挪德卡莱「执灯士」的一员——他喜欢这样介绍自己。
+                </p>
+            </div>
         </div>
-    </div>
 
-    <!-- ============================================================ -->
-    <script>
+        <!-- ===== 卡片4：Ineffa ===== -->
+        <div id="Ineffa" class="content-panel">
+            <h2>Ineffa</h2>
+            <a href="https://patchwiki.biligame.com/images/ys/0/06/fc5z8bw9xjptxvr1xqhi3fg87d3t4aa.png">
+                <img src="https://fastcdn.hoyoverse.com/content-v2/hk4e/157730/bcbd2761b4a6d3cef8030190c8f223f1_2382801960058571524.png" alt="Ineffa">
+            </a>
+            <div class="character-intro">
+                <p class="character-intro-content">
+                    来自挪德卡莱的机器人，机体集成了来自世界各地的机关部件，由「叮铃哐啷蛋卷工坊」设计制造。            </p>
+            </div>
+        </div>
 
-        /* 定义角色数据字典 */
-        var characterData = {
-            Sandrone:{
-                name:"Sandrone",
-                images:[
-                    "https://fastcdn.mihoyo.com/content-v2/hk4e/157823/16e911d7e83ec4a44860aaecf26960de_3410040563868765692.jpg",
-                    "https://fastcdn.mihoyo.com/content-v2/hk4e/157823/5dce7c327bba633fdc6f50d7e79e480c_7387904052823575900.jpg"
-                ]
-            },
-            Columbina:{
-                name:"Columbina",
-                images: [
-                    "https://fastcdn.mihoyo.com/content-v2/hk4e/157823/aa0dcba0bcbd2e7da35dcb5e3aba2b3c_7762775546423283938.jpg",
-                    "https://fastcdn.mihoyo.com/content-v2/hk4e/157823/6ce8648293cf4ea33342e015936f2421_4824195509302088752.jpg"
-                ]
-            },
-            Flins:{
-                name:"Flins",
-                images:[
-                    "https://fastcdn.mihoyo.com/content-v2/hk4e/157823/aa0dcba0bcbd2e7da35dcb5e3aba2b3c_7762775546423283938.jpg",
-                    "https://fastcdn.mihoyo.com/content-v2/hk4e/157823/6ce8648293cf4ea33342e015936f2421_4824195509302088752.jpg"
-                ]
-            },
-            Ineffa:{
-                name:"Ineffa",
-                images:[
-                    "https://fastcdn.mihoyo.com/content-v2/hk4e/157823/aa0dcba0bcbd2e7da35dcb5e3aba2b3c_7762775546423283938.jpg",
-                    "https://fastcdn.mihoyo.com/content-v2/hk4e/157823/6ce8648293cf4ea33342e015936f2421_4824195509302088752.jpg"
-                ]
-            },
-            Furina:{
-                name:"Furina",
-                images:[
-                    "https://act-webstatic.mihoyo.com/upload/contentweb/hk4e/34ec75c9ed70f793cdd698ad1a4764e5_731983624099835302.jpg",
-                    "https://act-webstatic.mihoyo.com/upload/contentweb/hk4e/3ce8f43e9de08e1988aafc00fdff2410_8142185104639306099.jpg"
-                ]
-            }
-        }
+        <!-- ===== 卡片5：Furina ===== -->
+        <div id="Furina" class="content-panel">
+            <h2>Furina</h2>
+            <a href="https://patchwiki.biligame.com/images/ys/6/68/gf8q0j490ygvze7w9npx35e49hw6iu0.png">
+                <img src="https://fastcdn.hoyoverse.com/content-v2/hk4e/113447/6b3e34fb09616b569998330b968cd2a0_6887303933528198014.png" alt="Furina">
+            </a>
+            <div class="character-intro">
+                <p class="character-intro-content">
+                    「众水、众方、众民与众律法的女王」，深受民众喜爱。<br>
+                    热衷于欧庇克莱歌剧院上演的每一场审判，也总是在意着「观众」的眼光。
+                </p>
+            </div>
+        </div>
 
-        var characterName = Object.keys(characterData);
+        <!-- ============================================================ -->
+        <script>
 
-
-        startTimer();
-
-        // 切换内容函数
-        function switchContent() {
-            var selectedValue = document.getElementById("character-select").value;
-
-            // 1. 切换卡片显示
-            for (var i = 0; i < characterName.length; i++) {
-                document.getElementById(characterName[i]).style.display =
-                    selectedValue === characterName[i] ? "block" : "none";
+            /* 定义角色数据字典 */
+            var characterData = {
+                Sandrone:{
+                    name:"Sandrone",
+                    images:[
+                        "https://fastcdn.mihoyo.com/content-v2/hk4e/157823/16e911d7e83ec4a44860aaecf26960de_3410040563868765692.jpg",
+                        "https://fastcdn.mihoyo.com/content-v2/hk4e/157823/5dce7c327bba633fdc6f50d7e79e480c_7387904052823575900.jpg"
+                    ]
+                },
+                Columbina:{
+                    name:"Columbina",
+                    images: [
+                        "https://fastcdn.mihoyo.com/content-v2/hk4e/157823/aa0dcba0bcbd2e7da35dcb5e3aba2b3c_7762775546423283938.jpg",
+                        "https://fastcdn.mihoyo.com/content-v2/hk4e/157823/6ce8648293cf4ea33342e015936f2421_4824195509302088752.jpg"
+                    ]
+                },
+                Flins:{
+                    name:"Flins",
+                    images:[
+                        "https://fastcdn.mihoyo.com/content-v2/hk4e/157823/aa0dcba0bcbd2e7da35dcb5e3aba2b3c_7762775546423283938.jpg",
+                        "https://fastcdn.mihoyo.com/content-v2/hk4e/157823/6ce8648293cf4ea33342e015936f2421_4824195509302088752.jpg"
+                    ]
+                },
+                Ineffa:{
+                    name:"Ineffa",
+                    images:[
+                        "https://fastcdn.mihoyo.com/content-v2/hk4e/157823/aa0dcba0bcbd2e7da35dcb5e3aba2b3c_7762775546423283938.jpg",
+                        "https://fastcdn.mihoyo.com/content-v2/hk4e/157823/6ce8648293cf4ea33342e015936f2421_4824195509302088752.jpg"
+                    ]
+                },
+                Furina:{
+                    name:"Furina",
+                    images:[
+                        "https://act-webstatic.mihoyo.com/upload/contentweb/hk4e/34ec75c9ed70f793cdd698ad1a4764e5_731983624099835302.jpg",
+                        "https://act-webstatic.mihoyo.com/upload/contentweb/hk4e/3ce8f43e9de08e1988aafc00fdff2410_8142185104639306099.jpg"
+                    ]
+                }
             }
 
-            // 2. 切换背景图
-            switch (selectedValue) {
-                case "Sandrone":
-                    document.body.style.backgroundImage = "url(https://fastcdn.mihoyo.com/content-v2/hk4e/157823/5dce7c327bba633fdc6f50d7e79e480c_7387904052823575900.jpg)";
-                    break;
-                case "Columbina":
-                    document.body.style.backgroundImage = "url(https://fastcdn.mihoyo.com/content-v2/hk4e/157823/6ce8648293cf4ea33342e015936f2421_4824195509302088752.jpg)";
-                    break;
-                case "Flins":
-                    document.body.style.backgroundImage = "url(https://fastcdn.mihoyo.com/content-v2/hk4e/157823/aa0dcba0bcbd2e7da35dcb5e3aba2b3c_7762775546423283938.jpg)";
-                    break;
-                case "Ineffa":
-                    document.body.style.backgroundImage = "url(https://fastcdn.mihoyo.com/content-v2/hk4e/157823/aa0dcba0bcbd2e7da35dcb5e3aba2b3c_7762775546423283938.jpg)";
-                    break;
-                case "Furina":
-                    document.body.style.backgroundImage = "url(https://act-webstatic.mihoyo.com/upload/contentweb/hk4e/34ec75c9ed70f793cdd698ad1a4764e5_731983624099835302.jpg)";
-                    break;
-            }
+            var characterName = Object.keys(characterData);
 
-            currentCharacter = selectedValue;
-            // 重置图片索引
-            currentImageIndex = 0;
-            // 获取当前角色的图片列表
-            var images = characterData[selectedValue].images;
-            // 将背景图设置为字典里的第一张
-            document.body.style.backgroundImage = "url(" + image[0] + ")";
-            // 调用定时器
+
             startTimer();
 
+            // 切换内容函数
+            function switchContent() {
+                var selectedValue = document.getElementById("character-select").value;
 
-            // 3. 记住当前选择
-            localStorage.setItem('selectedCharacter', selectedValue);
-        }
+                // 1. 切换卡片显示
+                for (var i = 0; i < characterName.length; i++) {
+                    document.getElementById(characterName[i]).style.display =
+                        selectedValue === characterName[i] ? "block" : "none";
+                }
 
-        // 轮播的实现
-        // 当前角色
-        var currentCharacter = null;
-        // 当前图片索引
-        var currentImageIndex = 0;
-        var timer = null;
+                // 2. 切换背景图
+                switch (selectedValue) {
+                    case "Sandrone":
+                        document.body.style.backgroundImage = "url(https://fastcdn.mihoyo.com/content-v2/hk4e/157823/5dce7c327bba633fdc6f50d7e79e480c_7387904052823575900.jpg)";
+                        break;
+                    case "Columbina":
+                        document.body.style.backgroundImage = "url(https://fastcdn.mihoyo.com/content-v2/hk4e/157823/6ce8648293cf4ea33342e015936f2421_4824195509302088752.jpg)";
+                        break;
+                    case "Flins":
+                        document.body.style.backgroundImage = "url(https://fastcdn.mihoyo.com/content-v2/hk4e/157823/aa0dcba0bcbd2e7da35dcb5e3aba2b3c_7762775546423283938.jpg)";
+                        break;
+                    case "Ineffa":
+                        document.body.style.backgroundImage = "url(https://fastcdn.mihoyo.com/content-v2/hk4e/157823/aa0dcba0bcbd2e7da35dcb5e3aba2b3c_7762775546423283938.jpg)";
+                        break;
+                    case "Furina":
+                        document.body.style.backgroundImage = "url(https://act-webstatic.mihoyo.com/upload/contentweb/hk4e/34ec75c9ed70f793cdd698ad1a4764e5_731983624099835302.jpg)";
+                        break;
+                }
 
-        // 定时器函数,用于切换索引
-        function startTimer() {
-            // 清楚旧定时器
-            if(timer != null) {
-                clearInterval(timer);
+                currentCharacter = selectedValue;
+                // 重置图片索引
+                currentImageIndex = 0;
+                // 获取当前角色的图片列表
+                var images = characterData[selectedValue].images;
+                // 将背景图设置为字典里的第一张
+                document.body.style.backgroundImage = "url(" + image[0] + ")";
+                // 调用定时器
+                startTimer();
+
+
+                // 3. 记住当前选择
+                localStorage.setItem('selectedCharacter', selectedValue);
             }
 
-            // 启动新的定时器
-            timer = setInterval(function (){
-                // 切换索引(0->1->0->1...)
-                currentImageIndex = (currentImageIndex + 1) % 2;
-                var images = characterData[currentCharacter].images;
-                document.body.style.backgroundImage = "url(" + images[currentImageIndex] + ")";
-            }, 5000);
-        }
+            // 轮播的实现
+            // 当前角色
+            var currentCharacter = null;
+            // 当前图片索引
+            var currentImageIndex = 0;
+            var timer = null;
 
-        function restoreState() {
-            var saved = localStorage.getItem('selectedCharacter');
-            if (saved && characterName.indexOf(saved) !== -1) {
-                document.getElementById("character-select").value = saved;
+            // 定时器函数,用于切换索引
+            function startTimer() {
+                // 清楚旧定时器
+                if(timer != null) {
+                    clearInterval(timer);
+                }
+
+                // 启动新的定时器
+                timer = setInterval(function (){
+                    // 切换索引(0->1->0->1...)
+                    currentImageIndex = (currentImageIndex + 1) % 2;
+                    var images = characterData[currentCharacter].images;
+                    document.body.style.backgroundImage = "url(" + images[currentImageIndex] + ")";
+                }, 5000);
             }
-            switchContent();
-        }
+
+            // 背景音乐
+            // 存储音乐列表
+            var musicList = [
+                {
+                    name: "蒙德的一日",
+                    src:"music/1蒙德/陈致逸 _ HOYO-MiX - A Day in Mondstadt  蒙德的一日.flac"
+                },
+                {
+                    name: "光辉的涨落",
+                    src:"music/1蒙德/陈致逸_HOYO-MiX - Photon of Fluctuation 光辉的涨落.flac"
+                },
+                {
+                    name:"璃月",
+                    src:"music/2璃月/陈致逸 _ HOYO-MiX - Liyue 璃月.flac"
+                },
+                {
+                    name: "疾如猛火",
+                    src:"music/2璃月/陈致逸_HOYO-MiX - Rapid as Wildfires 疾如猛火.flac"
+                },
+                {
+                    name:"几初的智愿",
+                    src:"music/4须弥/HOYO-MiX - For Riddles, for Wonders 几初的智愿.flac"
+                },
+                {
+                    name:"堙谷的铙歌",
+                    src:"music/4须弥/HOYO-MiX - Rhymes of Vales 堙谷的铙歌.flac"
+                },
+                {
+                    name:"咏哥与凯旋",
+                    src:"music/5枫丹/HOYO-MiX - 咏歌与凯旋 Lamentation et triomphe.flac"
+                },
+                {
+                    name:"星灯晕染之街",
+                    src:"music/5枫丹/HOYO-MiX - 星灯晕染之街 Coruscating Street.flac"
+                },
+                {
+                    name:"炎色的祝颂",
+                    src:"music/6纳塔/HOYO-MiX - 炎色的祝颂 Scarlet Song.flac"
+                },
+                {
+                    name:"预见的征程",
+                    src:"music/6纳塔/HOYO-MiX - 预见的征程 Venture of Tonalamatl.flac"
+                },
+                {
+                    name:"永夜与破晓的誓刃",
+                    src:"music/7挪德卡莱/HOYO-MiX - 永夜与破晓的誓刃 To Light the Aeon Dark.flac"
+                },
+                {
+                    name:"繁沸之港",
+                    src:"music/7挪德卡莱/HOYO-MiX - 繁沸之港 The Bustling Port Market.flac"
+                },
+                {
+                    name:"船歌优稳",
+                    src:"music/7挪德卡莱/HOYO-MiX - 船歌优稳 Sea Shanties Resounding.flac"
+                }
+            ]
+            // 定义音乐索引
+            var currentMusicIndex = 0;
+            var bgMusic = new Audio(musicList[2].src);
+            bgMusic.loop = true;// 无限重复
+            bgMusic.volume = 0.4;// 音量0.5
+            function playMusic() {
+                if(bgMusic.paused) bgMusic.play();// 播放音乐
+                else bgMusic.pause();// 暂停音乐
+            }
+            // 音乐结束切换下一首
+            bgMusic.addEventListener('ended',function() {
+                currentMusicIndex = (currentMusicIndex + 1) % musicList.length;
+                bgMusic.src = musicList[currentMusicIndex].src;
+            })
+
+            function restoreState() {
+                var saved = localStorage.getItem('selectedCharacter');
+                if (saved && characterName.indexOf(saved) !== -1) {
+                    document.getElementById("character-select").value = saved;
+                }
+                switchContent();
+            }
 
 
-        // 页面加载和缓存恢复时执行
-        window.addEventListener('load', restoreState);
-        window.addEventListener('pageshow', restoreState);
-    </script>
+            // 页面加载和缓存恢复时执行
+            window.addEventListener('load', restoreState);
+            window.addEventListener('pageshow', restoreState);
+        </script>
 
-</body>
+    </body>
 </html>
