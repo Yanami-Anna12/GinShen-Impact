@@ -231,9 +231,6 @@
 
             var characterName = Object.keys(characterData);
 
-
-            startTimer();
-
             // 切换内容函数
             function switchContent() {
                 var selectedValue = document.getElementById("character-select").value;
@@ -269,7 +266,7 @@
                 // 获取当前角色的图片列表
                 var images = characterData[selectedValue].images;
                 // 将背景图设置为字典里的第一张
-                document.body.style.backgroundImage = "url(" + image[0] + ")";
+                document.body.style.backgroundImage = "url(" + images[0] + ")";
                 // 调用定时器
                 startTimer();
 
@@ -359,9 +356,8 @@
             ]
             // 定义音乐索引
             var currentMusicIndex = 0;
-            var bgMusic = new Audio(musicList[2].src);
-            bgMusic.loop = true;// 无限重复
-            bgMusic.volume = 0.4;// 音量0.5
+            var bgMusic = new Audio(musicList[0].src);
+            bgMusic.volume = 0.4;// 音量0.4
             function playMusic() {
                 if(bgMusic.paused) bgMusic.play();// 播放音乐
                 else bgMusic.pause();// 暂停音乐
@@ -370,6 +366,7 @@
             bgMusic.addEventListener('ended',function() {
                 currentMusicIndex = (currentMusicIndex + 1) % musicList.length;
                 bgMusic.src = musicList[currentMusicIndex].src;
+                bgMusic.play();
             })
 
             function restoreState() {
